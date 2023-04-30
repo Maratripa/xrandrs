@@ -66,14 +66,10 @@ fn extend_displays() {
     let mut args: Vec<&str> = Vec::new();
 
     for (i, monitor) in monitors.iter().enumerate() {
-        if i == 0 {
-            args.push("--output");
-            args.push(monitor);
-            args.push("--auto");
-        } else {
-            args.push("--output");
-            args.push(monitor);
-            args.push("--auto");
+        args.push("--output");
+        args.push(monitor);
+        args.push("--auto");
+        if i != 0 {
             args.push("--right-of");
             args.push(monitors[i - 1].as_str());
         }
@@ -93,9 +89,20 @@ fn switch_displays() {
         None => 0,
     });
 
+    let mut args: Vec<&str> = Vec::new();
+
+    for (i, monitor) in monitors.iter().enumerate() {
+        args.push("--output");
+        args.push(monitor);
+        args.push("--auto");
+        if i != 0 {
+            args.push("--left-of");
+            args.push(monitors[i - 1].as_str());
+        }
+    }
+
     Command::new("xrandr")
-        .args(["--output", monitors[0], "--auto"])
-        .args(["--output", monitors[1], "--auto", "--left-of", monitors[0]])
+        .args(args)
         .spawn()
         .expect("Failed to execute switch command.");
 }
